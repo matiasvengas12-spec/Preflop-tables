@@ -1,0 +1,5 @@
+{
+  "name": "Poker Range Trainer",
+  "description": "An interactive web application for poker students to visualize, create, and study pre-flop hand ranges with a dynamic 13x13 grid, combo counter, and pre-loaded examples.",
+  "requestFramePermissions": []
+}
