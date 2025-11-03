@@ -18,6 +18,8 @@ export const HANDS_13x13: Hand[][] = RANKS.map((rank1, i) =>
 
 export const HANDS_FLAT: Hand[] = HANDS_13x13.flat();
 
+export const HANDS_ORDERED_IDS = HANDS_FLAT.map(h => h.id);
+
 export const PRELOADED_RANGES: Record<string, string[]> = {
   'Clear mode': [],
   'resteal': ['AA', 'KK', 'QQ', 'JJ', 'TT', 'AQs', 'AJs', 'ATs', 'A5s', 'A4s', 'A3s', 'A2s', 'KQs', 'AKo', 'AQo'],
