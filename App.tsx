@@ -5,6 +5,7 @@ import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import HandGrid from './components/HandGrid';
 import Footer from './components/Footer';
+import ThumbnailGridView from './components/ThumbnailGridView';
 
 const initialHandStates = (): Record<string, HandState> => {
   const states: Record<string, HandState> = {};
@@ -18,6 +19,7 @@ function App() {
   const [handStates, setHandStates] = useState<Record<string, HandState>>(initialHandStates);
   const [activeTag, setActiveTag] = useState<TagType>(0);
   const [activeRange, setActiveRange] = useState<string>('Clear mode');
+  const [isThumbnailView, setIsThumbnailView] = useState(false);
 
   const handleCellClick = useCallback((handId: string) => {
     setHandStates(prevStates => {
@@ -55,7 +57,10 @@ function App() {
     setHandStates(newStates);
     setActiveRange(rangeName);
     setActiveTag(1); // Set active tag to 1 for consistency
-  }, []);
+    if (isThumbnailView) {
+        setIsThumbnailView(false);
+    }
+  }, [isThumbnailView]);
 
   const handleQuickSelect = useCallback((filterFn: (hand: Hand) => boolean) => {
     const newStates: Record<string, HandState> = { ...handStates };
@@ -71,7 +76,6 @@ function App() {
     setActiveRange('');
   }, [handStates, activeTag]);
 
-  // FIX: Refactored stats calculation to fix typing issue and improve performance.
   const stats = useMemo(() => {
     const selectedCombos = HANDS_FLAT.reduce((sum, hand) => {
       if (handStates[hand.id].isSelected) {
@@ -88,23 +92,32 @@ function App() {
       <Sidebar 
         ranges={PRELOADED_RANGES} 
         activeRange={activeRange}
-        onRangeSelect={handleRangeSelect} 
+        onRangeSelect={handleRangeSelect}
+        isThumbnailView={isThumbnailView}
+        onToggleView={() => setIsThumbnailView(prev => !prev)}
       />
       <main className="flex-1 flex flex-col min-w-0">
-        <div className="p-4 bg-gray-800 rounded-lg shadow-lg flex flex-col h-full">
-            <Header activeTag={activeTag} onTagSelect={setActiveTag} />
-            <HandGrid 
-                hands={HANDS_13x13}
-                handStates={handStates}
-                onCellClick={handleCellClick}
-            />
-            <Footer 
-                comboCount={stats.selectedCombos}
-                percentage={stats.percentage}
-                onQuickSelect={handleQuickSelect}
-                onClear={handleClear}
-            />
-        </div>
+        {isThumbnailView ? (
+          <ThumbnailGridView 
+            ranges={PRELOADED_RANGES}
+            onRangeSelect={handleRangeSelect}
+          />
+        ) : (
+          <div className="p-4 bg-gray-800 rounded-lg shadow-lg flex flex-col h-full">
+              <Header activeTag={activeTag} onTagSelect={setActiveTag} />
+              <HandGrid 
+                  hands={HANDS_13x13}
+                  handStates={handStates}
+                  onCellClick={handleCellClick}
+              />
+              <Footer 
+                  comboCount={stats.selectedCombos}
+                  percentage={stats.percentage}
+                  onQuickSelect={handleQuickSelect}
+                  onClear={handleClear}
+              />
+          </div>
+        )}
       </main>
     </div>
   );
